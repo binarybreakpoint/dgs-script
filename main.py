@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
+# In[1]:
 
 
 import pdfquery
@@ -11,7 +11,7 @@ from lxml import html
 import copy as copy
 
 
-# In[3]:
+# In[2]:
 
 
 template = pdfquery.PDFQuery("./template.pdf")
@@ -21,7 +21,7 @@ pdf = pdfquery.PDFQuery("./example.pdf")
 pdf.load()
 
 
-# In[4]:
+# In[3]:
 
 
 # Obter bounding boxes a partir do pdf 'template' #
@@ -89,7 +89,7 @@ for attr in attrs.keys():
     bboxes[attr] = bbox
 
 
-# In[5]:
+# In[4]:
 
 
 # Obter dados dado um pdf #
@@ -114,14 +114,14 @@ def get_values(pdf):
     return res
 
 
-# In[6]:
+# In[5]:
 
 
 #output de um pdf exemplo
 display(get_values(pdf))
 
 
-# In[7]:
+# In[6]:
 
 
 #Obter dados da página do Min.Saúde
@@ -132,7 +132,7 @@ todayStr = datetime.today().strftime('%d/%m/%Y')
 yesterdayStr = datetime.strftime(datetime.now() - timedelta(1), '%d/%m/%Y')
 
 
-# In[10]:
+# In[7]:
 
 
 tree = html.fromstring(page.content)
@@ -163,7 +163,7 @@ print("Getting values...")
 vals = [get_values(x) for x in pdfs]
 
 
-# In[11]:
+# In[8]:
 
 
 #Agrupa dados dos últimos dias numa lista
@@ -179,7 +179,7 @@ for file_vals in vals:
 display(_attrs)
 
 
-# In[12]:
+# In[9]:
 
 
 #Cálcula casos ativos
@@ -189,7 +189,7 @@ for i in range(6):
 print(_attrs['ativos'])
 
 
-# In[13]:
+# In[19]:
 
 
 #pretty print dos valores
@@ -208,6 +208,8 @@ def latest(k):
 def var(k):
     return diff_str(_attrs[k][0] - _attrs[k][1])
 def var_d(k,days=1):
+    if(_attrs[k][0+days] == 0):
+        return "--"
     diff = _attrs[k][0] - _attrs[k][0+days]
     diff_p = diff*100/_attrs[k][0+days]
     return diff_str(diff_p,end="%")
@@ -248,6 +250,48 @@ template_txt = f"""
 |📊 **Aumento de Novos Casos face a Casos Ativos:**|
 :--|
 | {aumento()}|
+
+---
+
+## Por região
+
+**Casos Confirmados**
+
+|Região|👥 Totais|Variação|📈 1 dia|📈 3 dias|📈 5 dias|
+:--|:--|:--|:--|:--|:--|
+|**Norte**{row_str('norte')}
+|**Centro**{row_str('centro')}
+|**LVT**{row_str('LVT')}
+|**Alentejo**{row_str('alentejo')}
+|**Algarve**{row_str('algarve')}
+|**Açores**{row_str('açores')}
+|**Madeira**{row_str('madeira')}
+
+**Óbitos**
+
+|Região|**☠️ Óbitos**|**Variação**|**📈 1 dia**|**📈 3 dias**|**📈 5 dias**|
+:--|:--|:--|:--|:--|:--|
+|**Norte**{row_str('norte_o')}
+|**Centro**{row_str('centro_o')}
+|**LVT**{row_str('LVT_o')}
+|**Alentejo**{row_str('alentejo_o')}
+|**Algarve**{row_str('algarve_o')}
+|**Açores**{row_str('açores_o')}
+|**Madeira**{row_str('madeira_o')}
+
+---
+
+**Dados obtidos automaticamente do site da DGS**
+
+[Código fonte disponível aqui](https://github.com/binarybreakpoint/dgs-script)
 """
+
+
 print(template_txt)
+
+
+# In[ ]:
+
+
+
 
